@@ -1,9 +1,13 @@
+// ENV variable setup
+require('dotenv').config();
+
 // import libraries and modules
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
 
 // import routes
 var indexRouter = require('./routes/index');
@@ -11,6 +15,16 @@ var usersRouter = require('./routes/users');
 
 // creates express app and assigns to app variable
 var app = express();
+
+// setup mongoDB
+const host = process.env.DB_HOST;
+const user = process.env.DB_USER;
+const pass = process.env.DB_PASS;
+
+var mongoDB = `mongodb+srv://${user}:${pass}@cluster0.9hibm.mongodb.net/${host}?retryWrites=true&w=majority`;
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
