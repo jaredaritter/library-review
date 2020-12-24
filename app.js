@@ -17,11 +17,7 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 // setup mongoDB
-const host = process.env.DB_HOST;
-const user = process.env.DB_USER;
-const pass = process.env.DB_PASS;
-
-var mongoDB = `mongodb+srv://${user}:${pass}@cluster0.9hibm.mongodb.net/${host}?retryWrites=true&w=majority`;
+var mongoDB = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9hibm.mongodb.net/${process.env.DB_HOST}?retryWrites=true&w=majority`;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
