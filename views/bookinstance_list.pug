@@ -14,7 +14,7 @@ block content
         else 
           span.text-warning #{val.status} &nbsp;
         if val.status != 'Available' 
-          span (due: #{val.due_back}) 
+          span (due: #{val.due_back_formatted}) 
     
     else
       li There are no book copies in this library

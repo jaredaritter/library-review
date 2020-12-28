@@ -5,13 +5,13 @@ const BookInstance = require('../models/bookinstance');
 exports.bookinstance_list = function (req, res) {
   BookInstance.find()
     .populate('book')
-    .exec(function (err, data) {
+    .exec(function (err, list_bookinstances) {
       if (err) {
         return next(err);
       }
       res.render('bookinstance_list', {
         title: 'Book Instance List',
-        bookinstance_list: data,
+        bookinstance_list: list_bookinstances,
       });
     });
 };
