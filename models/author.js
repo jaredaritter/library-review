@@ -1,3 +1,4 @@
+const { DateTime } = require('luxon');
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -14,11 +15,33 @@ AuthorSchema.virtual('name').get(function () {
   return `${this.family_name}, ${this.first_name}`;
 });
 
-AuthorSchema.virtual('lifespan').get(function () {
-  return (
-    this.data_of_death.getYear() - this.date_of_birth.getYear()
-  ).toString();
+AuthorSchema.virtual('date_of_birth_formatted').get(function () {
+  return this.date_of_birth
+    ? DateTime.fromJSDate(this.date_of_birth).toLocaleString(DateTime.DATE_MED)
+    : 'Unknown';
 });
+
+AuthorSchema.virtual('date_of_death_formatted').get(function () {
+  return this.date_of_death
+    ? DateTime.fromJSDate(this.date_of_death).toLocaleString(DateTime.DATE_MED)
+    : 'Unknown';
+});
+
+AuthorSchema.virtual('lifespan').get(function () {
+  const birth = this.date_of_birth
+    ? DateTime.fromJSDate(this.date_of_birth).toLocaleString(DateTime.DATE_MED)
+    : 'Unknown';
+  const death = this.date_of_death
+    ? DateTime.fromJSDate(this.date_of_death).toLocaleString(DateTime.DATE_MED)
+    : 'Unknown';
+  return `${birth} - ${death}`;
+});
+
+// AuthorSchema.virtual('lifespan').get(function () {
+//   return (
+//     this.data_of_death.getYear() - this.date_of_birth.getYear()
+//   ).toString();
+// });
 
 AuthorSchema.virtual('url').get(function () {
   return `/catalog/author/${this._id}`;
