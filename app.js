@@ -11,7 +11,6 @@ var mongoose = require('mongoose');
 
 // import routes
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var catalogRouter = require('./routes/catalog');
 
 // creates express app and assigns to app variable
@@ -36,7 +35,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/catalog', catalogRouter);
 
 // catch 404 and forward to error handler
