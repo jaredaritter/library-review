@@ -1,4 +1,7 @@
 const Genre = require('../models/genre');
+const Book = require('../models/book');
+
+const async = require('async');
 
 // Display list of all Genre.
 exports.genre_list = function (req, res) {
@@ -17,7 +20,36 @@ exports.genre_list = function (req, res) {
 
 // Display detail page for a specific Genre.
 exports.genre_detail = function (req, res) {
-  res.send('NOT IMPLEMENTED: Genre detail: ' + req.params.id);
+  // USE GENRE ID AS PARAMETER
+  // DISPLAY NAMES AND SUMMARIES OF ALL BOOKS IN THE GENRE
+  async.parallel(
+    {
+      genre: function (callback) {
+        Genre.findById(req.params.id).exec(callback);
+      },
+      genre_books: function (callback) {
+        Book.find({ genre: req.params.id }).exec(callback);
+      },
+    },
+    function (err, results) {
+      // IF ASYNC ERROR ALLOW ERROR CHAIN TO HANDLE
+      if (err) {
+        return next(err);
+      }
+      // IF GENRE NOT FOUND SEND SPECIFIC ERROR DOWN CHAIN
+      if (results.genre === null) {
+        const err = new Error('Genre not found');
+        err.status = 404;
+        return next(err);
+      }
+      // IF SUCCESSFUL
+      res.render('genre_detail', {
+        title: 'Genre Detail',
+        genre: results.genre,
+        genre_books: results.genre_books,
+      });
+    }
+  );
 };
 
 // Display Genre create form on GET.
