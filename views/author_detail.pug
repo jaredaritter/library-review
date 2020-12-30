@@ -1,0 +1,21 @@
+//- Passing in title, author, author_books
+
+extend layout
+
+block content
+
+  h1 Author: #{author.name}
+  p #{author.lifespan}
+
+  div(class="indent")
+    
+    h4 Books
+
+    dl
+      each book in author_books
+        dt
+          a(href=book.url) #{book.title}
+        dd #{book.summary}
+
+      else 
+        p This author has no books.
