@@ -4,7 +4,7 @@ var BookInstance = require('../models/bookinstance');
 var Genre = require('../models/genre');
 
 var async = require('async');
-const book = require('../models/book');
+const { body, validationResult } = require('express-validator');
 
 exports.index = function (req, res, next) {
   async.parallel(
