@@ -55,13 +55,105 @@ exports.genre_detail = function (req, res, next) {
 
 // Display Genre create form on GET.
 exports.genre_create_get = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Genre create GET');
+  Genre.find()
+    .sort([['name', 'ascending']])
+    .exec(function (err, list_genres) {
+      if (err) {
+        return next(err);
+      }
+      res.render('genre_form', {
+        title: 'Create Genre',
+        genre_list: list_genres,
+      });
+    });
 };
 
 // Handle Genre create on POST.
-exports.genre_create_post = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Genre create POST');
-};
+// exports.genre_create_post = [
+//   // VALIDATE AND SANITIZE NAME FIELD
+//   body('name', 'Genre name required.').trim().isLength({ min: 1 }).escape(),
+//   // PROCESS REQUEST
+//   (req, res, next) => {
+//     const errors = validationResult(req);
+//     const genre = new Genre({ name: req.body.name });
+//     if (!errors.isEmpty()) {
+//       res.render('genre_form', {
+//         title: 'Create Genre',
+//         genre: genre,
+//         errors: errors.array(),
+//       });
+//       return;
+//     } else {
+//       Genre.findOne({ name: req.body.name }).exec(function (err, found_genre) {
+//         if (err) return next(err);
+//         if (found_genre) {
+//           res.redirect(found_genre.url);
+//         } else {
+//           genre.save(function (err) {
+//             res.redirect(genre.url);
+//           });
+//         }
+//       });
+//     }
+//   },
+// ];
+exports.genre_create_post = [
+  // VALIDATE AND SANITIZE
+  // MESSAGE APPIES TO VALIDATOR ISLENGTH
+  body('name', 'Genre name required.').trim().isLength({ min: 1 }).escape(),
+
+  // PROCESS VALIDATED AND SANITIZED REQUEST
+  (req, res, next) => {
+    // SAVE VALIDATION ERRORS FROM THE REQUEST
+    const errors = validationResult(req);
+
+    // CREATE NEW GENRE OBJECT (ALLOWS FOR EASY USE OF MODEL SAVE METHOD LATER ON TO STORE IN DB)
+    const genre = new Genre({
+      name: req.body.name,
+    });
+
+    // IF VALIDATION ERRORS, RENDER FORM AGAIN WITH SANITIZED VALUES AND ERROR MESSAGE.
+    if (!errors.isEmpty()) {
+      Genre.find()
+        .sort([['name', 'ascending']])
+        .exec(function (err, list_genres) {
+          if (err) {
+            return next(err);
+          }
+          res.render('genre_form', {
+            title: 'Create Genre',
+            genre_list: list_genres,
+            genre: genre,
+            errors: errors.array(),
+          });
+        });
+    }
+
+    // IF DATA IS VALID CONTINUE
+    else {
+      // CHECK IF GENRE NAME ALREADY PRESENT IN DB
+      Genre.findOne({ name: req.body.name }).exec(function (err, found_genre) {
+        // IF OTHER ERROR, SEND DOWN CHAIN
+        if (err) {
+          return next(err);
+        }
+        // IF GENRE ALREADY PRESENT, REDIRECT TO THAT DETAIL PAGE
+        if (found_genre) {
+          res.redirect(found_genre.url);
+        }
+        // IF DATA IS VALID AND NAME NOT PRESENT SAVE TO DB AND REDIRECT TO ITS DETAIL PAGE
+        else {
+          genre.save(function (err) {
+            if (err) {
+              return next(err);
+            }
+            res.redirect(genre.url);
+          });
+        }
+      });
+    }
+  },
+];
 
 // Display Genre delete form on GET.
 exports.genre_delete_get = function (req, res, next) {
