@@ -37,12 +37,6 @@ AuthorSchema.virtual('lifespan').get(function () {
   return `${birth} - ${death}`;
 });
 
-// AuthorSchema.virtual('lifespan').get(function () {
-//   return (
-//     this.data_of_death.getYear() - this.date_of_birth.getYear()
-//   ).toString();
-// });
-
 AuthorSchema.virtual('url').get(function () {
   return `/catalog/author/${this._id}`;
 });
