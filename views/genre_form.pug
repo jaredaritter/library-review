@@ -18,14 +18,15 @@ block content
       )
     button.btn.btn-primary(type='submit') Submit
   
-  div.indent
+  if errors
+    ul.error
+      for error in errors
+        li!= error.msg
+  
+  .indent
     h4 Current Genres
 
     ul
       each genre in genre_list
         li #{genre.name}
   
-  if errors
-    ul
-      for error in errors
-        li!= error.msg
