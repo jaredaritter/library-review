@@ -17,3 +17,8 @@ a {
   margin-left: 20px;
   margin-top: 20px;
 }
+
+.error {
+  color: red;
+  margin-top: 20px;
+}
