@@ -222,15 +222,143 @@ exports.book_delete_post = function (req, res, next) {
       return next(err);
     }
     res.redirect('/catalog/books');
-  })
+  });
 };
 
 // Display book update form on GET.
 exports.book_update_get = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Book update GET');
+  async.parallel(
+    {
+      book: function (callback) {
+        Book.findById(req.params.id)
+          .populate('author')
+          .populate('genre')
+          .exec(callback);
+      },
+      authors: function (callback) {
+        Author.find().sort({ family_name: 1 }).exec(callback);
+      },
+      genres: function (callback) {
+        Genre.find().sort({ name: 1 }).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.book === null) {
+        var err = new Error('Book not fould');
+        err.status = 404;
+        return next(err);
+      }
+      for (
+        let all_genre_iter = 0;
+        all_genre_iter < results.genres.length;
+        all_genre_iter++
+      ) {
+        for (
+          let book_genre_iter = 0;
+          book_genre_iter < results.book.genre.length;
+          book_genre_iter++
+        ) {
+          if (
+            results.genres[all_genre_iter]._id.toString() ===
+            results.book.genre[book_genre_iter]._id.toString()
+          ) {
+            results.genres[all_genre_iter].checked = 'true';
+          }
+        }
+      }
+      res.render('book_form', {
+        title: 'Update Book',
+        book: results.book,
+        authors: results.authors,
+        genres: results.genres,
+      });
+    }
+  );
 };
 
 // Handle book update on POST.
-exports.book_update_post = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Book update POST');
-};
+exports.book_update_post = [
+  // CONVERT GENRE TO ARRAY
+  (req, res, next) => {
+    if (!(req.body.genre instanceof Array)) {
+      if (typeof req.body.genre === 'undefined') req.body.genre = [];
+      else req.body.genre = new Array(req.body.genre);
+    }
+    next();
+  },
+
+  // HANDLE VALIDATION
+  body('title', 'Title must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('author', 'Author must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('summary', 'Summary must not be empty.')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }).escape(),
+  body('genre.*').escape(),
+
+  // PROCESS REQUEST
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const book = new Book({
+      title: req.body.title,
+      author: req.body.author,
+      summary: req.body.summary,
+      isbn: req.body.isbn,
+      genre: typeof req.body.genre === 'undefined' ? [] : req.body.genre,
+      _id: req.params.id, //This is required, or a new ID will be assigned!
+    });
+
+    if (!errors.isEmpty()) {
+      async.parallel(
+        {
+          authors: function (callback) {
+            Author.find(callback);
+          },
+          genres: function (callback) {
+            Genre.find(callback);
+          },
+        },
+        function (err, results) {
+          if (err) {
+            return next(err);
+          }
+
+          // Mark our selected genres as checked.
+          for (let i = 0; i < results.genres.length; i++) {
+            if (book.genre.indexOf(results.genres[i]._id) > -1) {
+              results.genres[i].checked = 'true';
+            }
+          }
+          res.render('book_form', {
+            title: 'Update Book',
+            authors: results.authors,
+            genres: results.genres,
+            book: book,
+            errors: errors.array(),
+          });
+        }
+      );
+      return;
+    }
+    // IF DATA FORM VALID, UPDATE THE RECORD
+    else {
+      Book.findByIdAndUpdate(req.params.id, book, {}, function (err, theBook) {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(theBook.url);
+      });
+    }
+  },
+];
