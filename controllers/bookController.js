@@ -320,6 +320,7 @@ exports.book_update_post = [
       _id: req.params.id, //This is required, or a new ID will be assigned!
     });
 
+    // CURRENTLY WILL NOT BE CALLED WITH NORMAL PAGE USE BECAUSE CLIENT SIDE REQUIRED FIELDS PREVENT SUBMISSION. THIS MATCHES EXPRESS-VALIDATOR CONDITIONS. THIS WILL ONLY BE CALLED FOR NON-BROWSER BASED REQUESTS LIKE POSTMAN
     if (!errors.isEmpty()) {
       async.parallel(
         {
