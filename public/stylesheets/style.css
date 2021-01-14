@@ -22,3 +22,8 @@ a {
   color: red;
   margin-top: 20px;
 }
+
+.checkbox {
+  display: inline;
+  padding-right: 10px;
+}
