@@ -247,10 +247,11 @@ exports.book_update_get = function (req, res, next) {
         return next(err);
       }
       if (results.book === null) {
-        var err = new Error('Book not fould');
+        var err = new Error('Book not found');
         err.status = 404;
         return next(err);
       }
+      // CHECK APPROPRIATE GENRE BOXES
       for (
         let all_genre_iter = 0;
         all_genre_iter < results.genres.length;
