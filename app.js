@@ -31,7 +31,7 @@ app.set('view engine', 'pug');
 
 // add middleware libraries into request handling chain
 app.use(logger('dev'));
-app.use(express.json());
+app.use(express.json()); // accepts body information in json format
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
