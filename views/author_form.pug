@@ -28,13 +28,13 @@ block content
       input#date_of_birth.form-control(
         type='date'
         name='date_of_birth'
-        value=(author === undefined ? '' : author.date_of_birth)
+        value=(author === undefined ? '' : author.date_of_birth_ISODate)
       )
       label(for='date_of_death') Date of Death:
       input#date_of_death.form-control(
         type='date'
         name='date_of_death'
-        value=(author === undefined ? '' : author.date_of_death)
+        value=(author === undefined ? '' : author.date_of_death_ISODate)
       )
     button.btn.btn-primary(type='submit') Submit
 
@@ -43,9 +43,10 @@ block content
       for error in errors
         li!= error.msg
 
-  .indent
-    h4 Current Authors
-    
-    ul
-      for author in author_list
-        li #{author.family_name}, #{author.first_name}
+  if author_list
+    .indent
+      h4 Current Authors
+      
+      ul
+        for author in author_list
+          li #{author.family_name}, #{author.first_name}
