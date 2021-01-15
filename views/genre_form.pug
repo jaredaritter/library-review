@@ -23,10 +23,11 @@ block content
       for error in errors
         li!= error.msg
   
-  .indent
-    h4 Current Genres
+  if genre_list
+    .indent
+      h4 Current Genres
 
-    ul
-      each genre in genre_list
-        li #{genre.name}
+      ul
+        each genre in genre_list
+          li #{genre.name}
   
