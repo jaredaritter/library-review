@@ -247,6 +247,7 @@ exports.author_update_post = [
       res.render('author_form', {
         title: 'Update Author',
         author: author,
+        errors: errors.array(),
       });
       return;
     }
