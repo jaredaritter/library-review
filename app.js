@@ -32,7 +32,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // add middleware libraries into request handling chain
-app.use(helmet());
+// app.use(helmet()); // Currently causing CSP errors. Need to look at policy.
 app.use(compression());
 app.use(logger('dev'));
 app.use(express.json()); // accepts body information in json format
