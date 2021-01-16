@@ -17,7 +17,8 @@ var catalogRouter = require('./routes/catalog');
 var app = express();
 
 // setup mongoDB
-var mongoDB = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9hibm.mongodb.net/${process.env.DB_HOST}?retryWrites=true&w=majority`;
+var dev_db_url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9hibm.mongodb.net/${process.env.DB_HOST}?retryWrites=true&w=majority`;
+var mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
