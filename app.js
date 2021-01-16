@@ -7,6 +7,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var compression = require('compression');
 var mongoose = require('mongoose');
 
 // import routes
@@ -30,6 +31,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // add middleware libraries into request handling chain
+app.use(compression());
 app.use(logger('dev'));
 app.use(express.json()); // accepts body information in json format
 app.use(express.urlencoded({ extended: false }));
